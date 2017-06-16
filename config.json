@@ -1,0 +1,14 @@
+{
+  "prompts": {
+    "session": {
+      "message": "Need session support ?",
+      "type": "confirm",
+      "default": false
+    },
+    "test": {
+      "message": "Need test ?",
+      "type": "confirm",
+      "default": true
+    }
+  }
+}
