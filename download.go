@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+// fork from https://github.com/gruntwork-io/fetch/blob/master/file.go
+
 // Download the zip file at the given URL to a temporary local directory.
 // Returns the absolute path to the downloaded zip file.
 // IMPORTANT: You must call "defer os.RemoveAll(dir)" in the calling function when done with the downloaded zip file!

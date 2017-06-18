@@ -1,5 +1,7 @@
 package main
 
+// fork from https://github.com/gruntwork-io/fetch/blob/master/github.go
+
 type GitHubRepo struct {
 	Url   string // The URL of the GitHub repo
 	Owner string // The GitHub account name under which the repo exists

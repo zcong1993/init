@@ -1,9 +1,6 @@
 package main
 
-import "io/ioutil"
-
 func main() {
-	data, err := ioutil.ReadFile("config.json")
+	err := CopyFile("./fixture/fixture.js", "./fixture/dest.js", map[string]interface{}{"name": "zcong1993"})
 	checkErr(err)
-	parse(data)
 }
