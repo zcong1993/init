@@ -3,12 +3,30 @@
     "session": {
       "message": "Need session support ?",
       "type": "confirm",
-      "default": false
+      "default": "false"
     },
     "test": {
       "message": "Need test ?",
       "type": "confirm",
-      "default": true
+      "default": "true"
+    },
+    "name": {
+      "message": "Your name ?",
+      "type": "string",
+      "default": "zcong"
+    },
+    "age": {
+      "message": "Your age ?",
+      "type": "string"
+    },
+    "lint": {
+      "message": "Choose a lint: ",
+      "type": "list",
+      "choices": [
+        "xo",
+        "eslint",
+        "disable"
+      ]
     }
   }
 }
