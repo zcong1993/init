@@ -1,12 +1,13 @@
 package main
 
 import (
-	"io"
 	"flag"
 	"fmt"
 	"github.com/mitchellh/colorstring"
+	"io"
 	"os"
 	"path/filepath"
+	"github.com/xtaci/goeval"
 )
 
 const (
@@ -24,9 +25,9 @@ type CLI struct {
 func (cli *CLI) Run(args []string) int {
 	var (
 		version bool
-		help bool
+		help    bool
 		install bool
-		force bool
+		force   bool
 	)
 	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
 	flags.SetOutput(cli.errStream)
@@ -84,15 +85,22 @@ func (cli *CLI) Run(args []string) int {
 	}
 	data := map[string]interface{}{}
 	configFile := filepath.Join(dest, "init.json")
+	cfg :=  Cfg{}
 	if _, err := os.Stat(configFile); err == nil {
-		cfg := NewConfig{Path:configFile}
-		d, err := cfg.GetPrompts()
+		c, err := NewConfig(configFile)
+		if err != nil {
+			PrintRedf(cli.errStream,
+				err.Error())
+			return ExitCodeError
+		}
+		d, err := c.GetPrompts()
 		if err != nil {
 			PrintRedf(cli.errStream,
 				err.Error())
 			return ExitCodeError
 		}
 		data = d
+		cfg = *c
 	}
 	if force {
 		if _, err := os.Stat(outPut); err == nil {
@@ -110,7 +118,12 @@ func (cli *CLI) Run(args []string) int {
 			"Repo not have template folder, is not a init template repo")
 		return ExitCodeError
 	}
-	err1 := CopyDirWithData(src, outPut, data)
+	sandbox :=  goeval.Scope{}
+	if len(cfg.Config.Filters) != 0 {
+		s := *EvalWithVals(data)
+		sandbox = s
+	}
+	err1 := CopyDirWithData(src, outPut, data, &cfg, &sandbox)
 	if err1 != nil {
 		PrintRedf(cli.errStream,
 			err1.Error())

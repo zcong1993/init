@@ -2,45 +2,43 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"github.com/tj/go-prompt"
 	"github.com/buger/jsonparser"
+	"github.com/tj/go-prompt"
+	"io/ioutil"
 )
 
 type Config struct {
 	Prompts map[string]Prompt
+	Filters map[string]string
 }
 
 type Prompt struct {
 	Message string
-	Type string
+	Type    string
 	Default string
 }
 
-type NewConfig struct {
-	Path string
+type Cfg struct {
+	Path      string
 	RawConfig []byte
+	Config    *Config
 }
 
-func(cfg *NewConfig) GetConfig()(*Config, error) {
-	rawConfig, err := ioutil.ReadFile(cfg.Path)
+func NewConfig(p string) (*Cfg, error) {
+	rawConfig, err := ioutil.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
-	cfg.RawConfig = rawConfig
 	var config Config
 	err = json.Unmarshal(rawConfig, &config)
 	if err != nil {
 		return nil, err
 	}
-	return &config, nil
+	return &Cfg{Path: p, RawConfig: rawConfig, Config: &config}, nil
 }
 
-func(cfg *NewConfig) GetPrompts()(map[string]interface{}, error) {
-	config, err := cfg.GetConfig()
-	if err != nil {
-		return nil, err
-	}
+func (cfg *Cfg) GetPrompts() (map[string]interface{}, error) {
+	config := cfg.Config
 	res := map[string]interface{}{}
 	for key, val := range config.Prompts {
 		if val.Type == "confirm" {
@@ -50,7 +48,7 @@ func(cfg *NewConfig) GetPrompts()(map[string]interface{}, error) {
 			if val.Default == "" {
 				res[key] = prompt.StringRequired(val.Message + " : ")
 			} else {
-				res[key] = prompt.String(val.Message + "(Default is %s) : ", val.Default)
+				res[key] = prompt.String(val.Message+"(Default is %s) : ", val.Default)
 				if res[key] == "" {
 					res[key] = val.Default
 				}

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"regexp"
 	"fmt"
-	"os"
 	"github.com/mitchellh/go-homedir"
+	"os"
 	"path/filepath"
+	"regexp"
 )
 
 var TemplateHome string
@@ -16,7 +16,6 @@ func init() {
 	TemplateHome = filepath.Join(home, ".init-templates")
 }
 
-
 func normalizeUrl(url string) (*GitHubCommit, *InitError) {
 	reg := regexp.MustCompile(`([^/]+)/([^#]+)(#(.+))?`)
 	matches := reg.FindSubmatch([]byte(url))
@@ -24,11 +23,11 @@ func normalizeUrl(url string) (*GitHubCommit, *InitError) {
 		return nil, newError(100, "invalid repo link")
 	}
 	gitCommit := &GitHubCommit{
-		Repo:GitHubRepo{
-			Owner:string(matches[1]),
-			Name:string(matches[2]),
+		Repo: GitHubRepo{
+			Owner: string(matches[1]),
+			Name:  string(matches[2]),
 		},
-		BranchName:"master",
+		BranchName: "master",
 	}
 	if string(matches[4]) != "" {
 		gitCommit.BranchName = string(matches[4])

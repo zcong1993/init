@@ -1,11 +1,13 @@
 package main
 
 import (
-	"path/filepath"
-	"os"
-	"io/ioutil"
 	"fmt"
 	"github.com/zcong1993/utils"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"github.com/xtaci/goeval"
+	"github.com/bmatcuk/doublestar"
 )
 
 // inspired by https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
@@ -30,7 +32,7 @@ func CopyFileWithData(src, dst string, data map[string]interface{}) (err error) 
 }
 
 // CopyDirWithData can compile all src folder files with data to dst
-func CopyDirWithData(src string, dst string, data map[string]interface{}) (err error) {
+func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *Cfg, sandbox *goeval.Scope) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -65,7 +67,7 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}) (err e
 		dstPath := filepath.Join(dst, entry.Name())
 
 		if entry.IsDir() {
-			err = CopyDirWithData(srcPath, dstPath, data)
+			err = CopyDirWithData(srcPath, dstPath, data, cfg, sandbox)
 			if err != nil {
 				return
 			}
@@ -74,10 +76,37 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}) (err e
 			if entry.Mode()&os.ModeSymlink != 0 {
 				continue
 			}
-
-			err = CopyFileWithData(srcPath, dstPath, data)
-			if err != nil {
-				return
+			if len(cfg.Config.Filters) != 0 {
+				for key, val := range cfg.Config.Filters {
+					v, err := sandbox.Eval(val)
+					if err != nil {
+						return err
+					}
+					fmt.Println(v, v.(bool))
+					isMatch, err := doublestar.PathMatch(filepath.Join(src, key), srcPath)
+					if err != nil {
+						return err
+					}
+					fmt.Println(filepath.Join(src, key), isMatch, srcPath)
+					if isMatch {
+						if v.(bool){
+							err = CopyFileWithData(srcPath, dstPath, data)
+							if err != nil {
+								return err
+							}
+						}
+					} else {
+						err = CopyFileWithData(srcPath, dstPath, data)
+						if err != nil {
+							return err
+						}
+					}
+				}
+			} else {
+				err = CopyFileWithData(srcPath, dstPath, data)
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
