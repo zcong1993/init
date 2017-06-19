@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// FAILED_TO_DOWNLOAD_FILE is error code of download error
-const FAILED_TO_DOWNLOAD_FILE = 500
+// FAILEDTODOWNLOADFILE is error code of download error
+const FAILEDTODOWNLOADFILE = 500
 
 // InitError a custom error type we defined so that we can provide friendlier error messages
 type InitError struct {

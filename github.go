@@ -2,13 +2,15 @@ package main
 
 // fork from https://github.com/gruntwork-io/fetch/blob/master/github.go
 
+// GitHubRepo is struct of github repo
 type GitHubRepo struct {
-	Url   string // The URL of the GitHub repo
+	URL   string // The URL of the GitHub repo
 	Owner string // The GitHub account name under which the repo exists
 	Name  string // The GitHub repo name
 	Token string // The personal access token to access this repo (if it's a private repo)
 }
 
+// GitHubCommit is struct of github commit
 // Represents a specific git commit.
 // Note that code using GitHub Commit should respect the following hierarchy:
 // - CommitSha > BranchName > GitTag

@@ -22,6 +22,7 @@ type CLI struct {
 	outStream, errStream io.Writer
 }
 
+// Run invokes the CLI with the given arguments.
 func (cli *CLI) Run(args []string) int {
 	var (
 		version bool
@@ -63,7 +64,7 @@ func (cli *CLI) Run(args []string) int {
 	}
 	url := parsedArgs[0]
 	outPut := parsedArgs[1]
-	gc, err := normalizeUrl(url)
+	gc, err := normalizeURL(url)
 	if err != nil {
 		PrintRedf(cli.errStream,
 			err.details)

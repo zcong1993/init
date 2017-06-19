@@ -7,23 +7,27 @@ import (
 	"io/ioutil"
 )
 
+// Config is type of init.json of template
 type Config struct {
 	Prompts map[string]Prompt
 	Filters map[string]string
 }
 
+// Prompt is type of prompts in init.json
 type Prompt struct {
 	Message string
 	Type    string
 	Default string
 }
 
+// Cfg is a struct of some information of config
 type Cfg struct {
 	Path      string
 	RawConfig []byte
 	Config    *Config
 }
 
+// NewConfig create a Cfg from config file
 func NewConfig(p string) (*Cfg, error) {
 	rawConfig, err := ioutil.ReadFile(p)
 	if err != nil {
@@ -37,6 +41,7 @@ func NewConfig(p string) (*Cfg, error) {
 	return &Cfg{Path: p, RawConfig: rawConfig, Config: &config}, nil
 }
 
+// GetPrompts provide data by prompts
 func (cfg *Cfg) GetPrompts() (map[string]interface{}, error) {
 	config := cfg.Config
 	res := map[string]interface{}{}

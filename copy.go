@@ -81,7 +81,6 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *C
 				if err != nil {
 					return err
 				}
-				fmt.Println(s, srcPath)
 				if s {
 					continue
 				}

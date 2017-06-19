@@ -8,6 +8,7 @@ import (
 	"regexp"
 )
 
+// TemplateHome is root of local cached templates
 var TemplateHome string
 
 func init() {
@@ -16,7 +17,7 @@ func init() {
 	TemplateHome = filepath.Join(home, ".init-templates")
 }
 
-func normalizeUrl(url string) (*GitHubCommit, *InitError) {
+func normalizeURL(url string) (*GitHubCommit, *InitError) {
 	reg := regexp.MustCompile(`([^/]+)/([^#]+)(#(.+))?`)
 	matches := reg.FindSubmatch([]byte(url))
 	if len(matches) < 3 {
