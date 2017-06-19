@@ -11,7 +11,7 @@ import (
 const Name = "init"
 
 // Version is cli current version
-const Version = "v0.0.1"
+const Version = "v0.1.0"
 
 // GitCommit is cli current git commit hash
 var GitCommit string
