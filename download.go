@@ -118,7 +118,7 @@ func extractFiles(zipFilePath, filesToExtractFromZipPath, localPath string) erro
 }
 
 // MakeGitHubZipFileRequest return an HTTP request that will fetch the given GitHub repo's zip file for the given tag, possibly with the gitHubOAuthToken in the header
-// Respects the GitHubCommit hierachy as defined in the code comments for GitHubCommit (e.g. GitTag > CommitSha)
+// Respects the GitHubCommit hierarchy as defined in the code comments for GitHubCommit (e.g. GitTag > CommitSha)
 func MakeGitHubZipFileRequest(gitHubCommit GitHubCommit, gitHubToken string) (*http.Request, error) {
 	var request *http.Request
 
