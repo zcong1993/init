@@ -36,13 +36,6 @@ func normalizeUrl(url string) (*GitHubCommit, *InitError) {
 	return gitCommit, nil
 }
 
-func exitWithError(err *InitError) {
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(err.errorCode)
-	}
-}
-
 func checkErr(err error) {
 	if err != nil {
 		fmt.Println(err)

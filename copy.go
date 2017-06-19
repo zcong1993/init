@@ -8,14 +8,10 @@ import (
 	"github.com/zcong1993/utils"
 )
 
-// fork from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
+// inspired by https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
-// CopyFile copies the contents of the file named src to the file named
-// by dst. The file will be created if it does not already exist. If the
-// destination file exists, all it's contents will be replaced by the contents
-// of the source file. The file mode will be copied from the source and
-// the copied data is synced/flushed to stable storage.
-func CopyFile(src, dst string, data map[string]interface{}) (err error) {
+// CopyFileWithData can compile src file with data to dst
+func CopyFileWithData(src, dst string, data map[string]interface{}) (err error) {
 	out, err := os.Create(dst)
 	if err != nil {
 		return
@@ -33,10 +29,8 @@ func CopyFile(src, dst string, data map[string]interface{}) (err error) {
 	return
 }
 
-// CopyDir recursively copies a directory tree, attempting to preserve permissions.
-// Source directory must exist, destination directory must *not* exist.
-// Symlinks are ignored and skipped.
-func CopyDir(src string, dst string, data map[string]interface{}) (err error) {
+// CopyDirWithData can compile all src folder files with data to dst
+func CopyDirWithData(src string, dst string, data map[string]interface{}) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -71,7 +65,7 @@ func CopyDir(src string, dst string, data map[string]interface{}) (err error) {
 		dstPath := filepath.Join(dst, entry.Name())
 
 		if entry.IsDir() {
-			err = CopyDir(srcPath, dstPath, data)
+			err = CopyDirWithData(srcPath, dstPath, data)
 			if err != nil {
 				return
 			}
@@ -81,7 +75,7 @@ func CopyDir(src string, dst string, data map[string]interface{}) (err error) {
 				continue
 			}
 
-			err = CopyFile(srcPath, dstPath, data)
+			err = CopyFileWithData(srcPath, dstPath, data)
 			if err != nil {
 				return
 			}

@@ -85,7 +85,8 @@ func (cli *CLI) Run(args []string) int {
 	data := map[string]interface{}{}
 	configFile := filepath.Join(dest, "init.json")
 	if _, err := os.Stat(configFile); err == nil {
-		d, err := GetConfig(configFile)
+		cfg := NewConfig{Path:configFile}
+		d, err := cfg.GetPrompts()
 		if err != nil {
 			PrintRedf(cli.errStream,
 				err.Error())
@@ -103,7 +104,13 @@ func (cli *CLI) Run(args []string) int {
 			}
 		}
 	}
-	err1 := CopyDir(filepath.Join(dest, "template"), outPut, data)
+	src := filepath.Join(dest, "template")
+	if _, err := os.Stat(src); os.IsNotExist(err) {
+		PrintRedf(cli.errStream,
+			"Repo not have template folder, is not a init template repo")
+		return ExitCodeError
+	}
+	err1 := CopyDirWithData(src, outPut, data)
 	if err1 != nil {
 		PrintRedf(cli.errStream,
 			err1.Error())

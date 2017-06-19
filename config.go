@@ -17,13 +17,27 @@ type Prompt struct {
 	Default string
 }
 
-func GetConfig(configPath string) (map[string]interface{}, error)  {
-	rawConfig, err := ioutil.ReadFile(configPath)
+type NewConfig struct {
+	Path string
+	RawConfig []byte
+}
+
+func(cfg *NewConfig) GetConfig()(*Config, error) {
+	rawConfig, err := ioutil.ReadFile(cfg.Path)
 	if err != nil {
 		return nil, err
 	}
+	cfg.RawConfig = rawConfig
 	var config Config
 	err = json.Unmarshal(rawConfig, &config)
+	if err != nil {
+		return nil, err
+	}
+	return &config, nil
+}
+
+func(cfg *NewConfig) GetPrompts()(map[string]interface{}, error) {
+	config, err := cfg.GetConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +58,7 @@ func GetConfig(configPath string) (map[string]interface{}, error)  {
 		}
 		if val.Type == "list" {
 			list := []string{}
-			jsonparser.ArrayEach(rawConfig, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			jsonparser.ArrayEach(cfg.RawConfig, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 				list = append(list, string(value))
 			}, "prompts", key, "choices")
 			i := prompt.Choose(val.Message, list)
