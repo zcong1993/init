@@ -151,7 +151,7 @@ func PrintBluef(w io.Writer, format string, args ...interface{}) {
 }
 
 var helpText = `
-	Usage: init [options...] REPO DSTPATH
+
 init is a tool to help you init project from git repo template, it will generate custom template by inquiring some question.
 
  Usage:
@@ -159,9 +159,9 @@ init is a tool to help you init project from git repo template, it will generate
  	init [options] REPO DSTPATH
 
  Options:
- 	-install, -i				Install repo from Github, will replace local cache
+ 	-install, -i                Install repo from Github, will replace local cache
 
- 	-force, -f					Replace dest path if exists
+ 	-force, -f                  Replace dest path if exists
 
  Example:
 
