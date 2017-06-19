@@ -24,7 +24,6 @@ func downloadGithubZipFile(gitHubCommit GitHubCommit, gitHubToken string) (strin
 	// Note that ioutil.TempDir has a peculiar interface. We need not specify any meaningful values to achieve our
 	// goal of getting a temporary directory.
 	tempDir, err := ioutil.TempDir("", "")
-	println(tempDir)
 	if err != nil {
 		return zipFilePath, wrapError(err)
 	}
@@ -68,6 +67,10 @@ func extractFiles(zipFilePath, filesToExtractFromZipPath, localPath string) erro
 	if err != nil {
 		return err
 	}
+	defer func(p string) {
+		//fmt.Println(p)
+		//fmt.Println(filepath.Dir(p))
+	}(zipFilePath)
 	defer r.Close()
 
 	// pathPrefix represents the portion of the local file path we will ignore when copying the file to localPath

@@ -4,7 +4,18 @@ import (
 	"regexp"
 	"fmt"
 	"os"
+	"github.com/mitchellh/go-homedir"
+	"path/filepath"
 )
+
+var TemplateHome string
+
+func init() {
+	home, err := homedir.Dir()
+	checkErr(err)
+	TemplateHome = filepath.Join(home, ".init-templates")
+}
+
 
 func normalizeUrl(url string) (*GitHubCommit, *InitError) {
 	reg := regexp.MustCompile(`([^/]+)/([^#]+)(#(.+))?`)
@@ -22,7 +33,6 @@ func normalizeUrl(url string) (*GitHubCommit, *InitError) {
 	if string(matches[4]) != "" {
 		gitCommit.BranchName = string(matches[4])
 	}
-	fmt.Printf("%+v", gitCommit)
 	return gitCommit, nil
 }
 
