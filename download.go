@@ -152,7 +152,6 @@ func DownloadAndExtract(gc *GitHubCommit)(string, *InitError) {
 	dest := filepath.Join(TemplateHome, gc.Repo.Owner, gc.Repo.Name)
 	if _, err := os.Stat(dest); err == nil {
 		err = os.RemoveAll(dest)
-		println(dest)
 		if err != nil {
 			return "", wrapError(err)
 		}

@@ -53,7 +53,7 @@ func CopyDir(src string, dst string, data map[string]interface{}) (err error) {
 		return
 	}
 	if err == nil {
-		return fmt.Errorf("destination already exists")
+		return fmt.Errorf("destination path already exists, delete it first or use option '-force, -f'")
 	}
 
 	err = os.MkdirAll(dst, si.Mode())
@@ -81,7 +81,7 @@ func CopyDir(src string, dst string, data map[string]interface{}) (err error) {
 				continue
 			}
 
-			err = CopyFile(srcPath, dstPath, map[string]interface{}{})
+			err = CopyFile(srcPath, dstPath, data)
 			if err != nil {
 				return
 			}

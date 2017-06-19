@@ -26,6 +26,7 @@ func (cli *CLI) Run(args []string) int {
 		version bool
 		help bool
 		install bool
+		force bool
 	)
 	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
 	flags.SetOutput(cli.errStream)
@@ -38,6 +39,9 @@ func (cli *CLI) Run(args []string) int {
 
 	flags.BoolVar(&install, "install", false, "")
 	flags.BoolVar(&install, "i", false, "")
+
+	flags.BoolVar(&force, "force", false, "")
+	flags.BoolVar(&force, "f", false, "")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeError
@@ -89,11 +93,20 @@ func (cli *CLI) Run(args []string) int {
 		}
 		data = d
 	}
-	fmt.Printf("%+v", data)
+	if force {
+		if _, err := os.Stat(outPut); err == nil {
+			err := os.RemoveAll(outPut)
+			if err != nil {
+				PrintRedf(cli.errStream,
+					err.Error())
+				return ExitCodeError
+			}
+		}
+	}
 	err1 := CopyDir(filepath.Join(dest, "template"), outPut, data)
 	if err1 != nil {
 		PrintRedf(cli.errStream,
-			err.Error())
+			err1.Error())
 		return ExitCodeError
 	}
 	return ExitCodeOK
@@ -116,7 +129,7 @@ func PrintBluef(w io.Writer, format string, args ...interface{}) {
 }
 
 var helpText = `
-	Usage: init [options...] REPO
+	Usage: init [options...] REPO DESTPATH
 rls is a tool to create Release on Github.
 
 `
