@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/bmatcuk/doublestar"
+	"github.com/xtaci/goeval"
 	"github.com/zcong1993/utils"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"github.com/xtaci/goeval"
-	"github.com/bmatcuk/doublestar"
 )
 
 // inspired by https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
@@ -92,23 +92,19 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *C
 			}
 		}
 	}
-
 	return
 }
 
-func shouldSkip(baseSrc, srcPath string, cfg *Cfg, sandbox *goeval.Scope)(bool, error) {
+func shouldSkip(baseSrc, srcPath string, cfg *Cfg, sandbox *goeval.Scope) (bool, error) {
 	for key, val := range cfg.Config.Filters {
 		v, err := sandbox.Eval(val)
 		if err != nil {
 			return false, err
 		}
-		//fmt.Println(v, v.(bool))
 		isMatch, err := doublestar.PathMatch(filepath.Join(baseSrc, key), srcPath)
-		fmt.Println(filepath.Join(baseSrc, key))
 		if err != nil {
 			return false, err
 		}
-		//fmt.Println(filepath.Join(src, key), isMatch, srcPath)
 		if isMatch && !v.(bool) {
 			return true, nil
 		}

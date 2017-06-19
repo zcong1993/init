@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/mitchellh/colorstring"
+	"github.com/xtaci/goeval"
 	"io"
 	"os"
 	"path/filepath"
-	"github.com/xtaci/goeval"
 )
 
 const (
@@ -85,7 +85,7 @@ func (cli *CLI) Run(args []string) int {
 	}
 	data := map[string]interface{}{}
 	configFile := filepath.Join(dest, "init.json")
-	cfg :=  Cfg{}
+	cfg := Cfg{}
 	if _, err := os.Stat(configFile); err == nil {
 		c, err := NewConfig(configFile)
 		if err != nil {
@@ -118,7 +118,7 @@ func (cli *CLI) Run(args []string) int {
 			"Repo not have template folder, is not a init template repo")
 		return ExitCodeError
 	}
-	sandbox :=  goeval.Scope{}
+	sandbox := goeval.Scope{}
 	if len(cfg.Config.Filters) != 0 {
 		s := *EvalWithVals(data)
 		sandbox = s
@@ -129,6 +129,7 @@ func (cli *CLI) Run(args []string) int {
 			err1.Error())
 		return ExitCodeError
 	}
+	PrintBluef(cli.outStream, "Success, all done!")
 	return ExitCodeOK
 }
 
@@ -149,7 +150,20 @@ func PrintBluef(w io.Writer, format string, args ...interface{}) {
 }
 
 var helpText = `
-	Usage: init [options...] REPO DESTPATH
-rls is a tool to create Release on Github.
+	Usage: init [options...] REPO DSTPATH
+init is a tool to help you init project from git repo template, it will generate custom template by inquiring some question.
+
+ Usage:
+
+ 	init [options] REPO DSTPATH
+
+ Options:
+ 	-install, -i				Install repo from Github, will replace local cache
+
+ 	-force, -f					Replace dest path if exists
+
+ Example:
+
+ 	init -i -f zcong1993/test ./test
 
 `
