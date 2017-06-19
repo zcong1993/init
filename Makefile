@@ -4,5 +4,5 @@ generate:
 	@go generate ./...
 
 build: generate
-	@echo "====> Build rls"
-	go build -ldflags "-X main.GitCommit=\"$(COMMIT)\"" -o bin/init
+	@echo "====> Build init"
+	@sh -c ./build.sh
