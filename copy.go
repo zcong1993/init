@@ -32,7 +32,7 @@ func CopyFileWithData(src, dst string, data map[string]interface{}) (err error) 
 }
 
 // CopyDirWithData can compile all src folder files with data to dst
-func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *Cfg, sandbox *goeval.Scope) (err error) {
+func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *Cfg, sandbox *goeval.Scope, baseSrc string) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -67,7 +67,7 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *C
 		dstPath := filepath.Join(dst, entry.Name())
 
 		if entry.IsDir() {
-			err = CopyDirWithData(srcPath, dstPath, data, cfg, sandbox)
+			err = CopyDirWithData(srcPath, dstPath, data, cfg, sandbox, baseSrc)
 			if err != nil {
 				return
 			}
@@ -77,39 +77,41 @@ func CopyDirWithData(src string, dst string, data map[string]interface{}, cfg *C
 				continue
 			}
 			if len(cfg.Config.Filters) != 0 {
-				for key, val := range cfg.Config.Filters {
-					v, err := sandbox.Eval(val)
-					if err != nil {
-						return err
-					}
-					fmt.Println(v, v.(bool))
-					isMatch, err := doublestar.PathMatch(filepath.Join(src, key), srcPath)
-					if err != nil {
-						return err
-					}
-					fmt.Println(filepath.Join(src, key), isMatch, srcPath)
-					if isMatch {
-						if v.(bool){
-							err = CopyFileWithData(srcPath, dstPath, data)
-							if err != nil {
-								return err
-							}
-						}
-					} else {
-						err = CopyFileWithData(srcPath, dstPath, data)
-						if err != nil {
-							return err
-						}
-					}
-				}
-			} else {
-				err = CopyFileWithData(srcPath, dstPath, data)
+				s, err := shouldSkip(baseSrc, srcPath, cfg, sandbox)
 				if err != nil {
-					return
+					return err
 				}
+				fmt.Println(s, srcPath)
+				if s {
+					continue
+				}
+			}
+			err = CopyFileWithData(srcPath, dstPath, data)
+			if err != nil {
+				return
 			}
 		}
 	}
 
 	return
+}
+
+func shouldSkip(baseSrc, srcPath string, cfg *Cfg, sandbox *goeval.Scope)(bool, error) {
+	for key, val := range cfg.Config.Filters {
+		v, err := sandbox.Eval(val)
+		if err != nil {
+			return false, err
+		}
+		//fmt.Println(v, v.(bool))
+		isMatch, err := doublestar.PathMatch(filepath.Join(baseSrc, key), srcPath)
+		fmt.Println(filepath.Join(baseSrc, key))
+		if err != nil {
+			return false, err
+		}
+		//fmt.Println(filepath.Join(src, key), isMatch, srcPath)
+		if isMatch && !v.(bool) {
+			return true, nil
+		}
+	}
+	return false, nil
 }

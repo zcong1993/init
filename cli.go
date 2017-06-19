@@ -123,7 +123,7 @@ func (cli *CLI) Run(args []string) int {
 		s := *EvalWithVals(data)
 		sandbox = s
 	}
-	err1 := CopyDirWithData(src, outPut, data, &cfg, &sandbox)
+	err1 := CopyDirWithData(src, outPut, data, &cfg, &sandbox, src)
 	if err1 != nil {
 		PrintRedf(cli.errStream,
 			err1.Error())
