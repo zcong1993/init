@@ -68,8 +68,7 @@ func extractFiles(zipFilePath, filesToExtractFromZipPath, localPath string) erro
 		return err
 	}
 	defer func(p string) {
-		//fmt.Println(p)
-		//fmt.Println(filepath.Dir(p))
+		os.RemoveAll(filepath.Dir(p))
 	}(zipFilePath)
 	defer r.Close()
 
@@ -147,4 +146,24 @@ func MakeGitHubZipFileRequest(gitHubCommit GitHubCommit, gitHubToken string) (*h
 	}
 
 	return request, nil
+}
+
+func DownloadAndExtract(gc *GitHubCommit)(string, *InitError) {
+	dest := filepath.Join(TemplateHome, gc.Repo.Owner, gc.Repo.Name)
+	if _, err := os.Stat(dest); err == nil {
+		err = os.RemoveAll(dest)
+		println(dest)
+		if err != nil {
+			return "", wrapError(err)
+		}
+	}
+	zipPath, err := downloadGithubZipFile(*gc, "")
+	if err != nil {
+		return "", err
+	}
+	err1 := extractFiles(zipPath, "", dest)
+	if err1 != nil {
+		return "", wrapError(err1)
+	}
+	return dest, nil
 }

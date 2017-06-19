@@ -1,13 +1,21 @@
 package main
 
-import "path"
+import (
+	"os"
+	"path/filepath"
+)
 
 func main() {
-	raw := "zcong1993/test"
-	gc, err := normalizeUrl(raw)
+	cli := &CLI{os.Stdout, os.Stderr}
+	os.Exit(cli.Run(os.Args))
+}
+
+func bak() {
+	url := "zcong1993/test"
+	gc, err := normalizeUrl(url)
 	exitWithError(err)
 	zipPath, err := downloadGithubZipFile(*gc, "")
 	exitWithError(err)
-	err1 := extractFiles(zipPath, "", path.Join(TemplateHome, gc.Repo.Owner, gc.Repo.Name))
+	err1 := extractFiles(zipPath, "", filepath.Join(TemplateHome, gc.Repo.Owner, gc.Repo.Name))
 	checkErr(err1)
 }
