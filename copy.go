@@ -27,7 +27,7 @@ func CopyFileWithData(src, dst string, data map[string]interface{}) (err error) 
 	if err != nil {
 		return
 	}
-	err = utils.Compile(out, string(tpl), data)
+	err = utils.CompileText(out, string(tpl), data)
 	return
 }
 
